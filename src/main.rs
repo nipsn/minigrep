@@ -1,5 +1,6 @@
 // use core::panicking::panic;
 use std::env;
+use std::error::Error;
 use std::fs;
 use std::process;
 
@@ -18,10 +19,19 @@ fn main() {
     println!("Searching for {}", config.query);
     println!("In file {}", config.file_path);
 
-    let content = fs::read_to_string(config.file_path)
-        .expect("What you doin brother. No file there");
+    if let Err(e) = run(config) {
+        println!("Application error: {e}");
+        process::exit(1);
+    };
 
-    println!("File text:\n{content}")
+}
+
+fn run(config: Config) -> Result<(), Box<dyn Error>>{
+    let content = fs::read_to_string(config.file_path)?;
+
+    println!("File text:\n{content}");
+
+    Ok(())
 }
 
 struct Config {
